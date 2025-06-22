@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>MindTide - Coastal Wellness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Evidence-based calming palette */
+            --soft-sage: #a8b5a0;
+            --muted-ocean: #8fa5b2;
+            --warm-sand: #e6ddd4;
+            --soft-foam: #f5f2ed;
+            --gentle-coral: #ddb5a6;
+            --misty-blue: #b5c4ce;
+            --deep-water: #6b8190;
+            --pale-sky: #e8eef2;
+            --text-primary: #4a5568;
+            --text-secondary: #718096;
+            --white: #ffffff;
+            --shadow: rgba(107, 129, 144, 0.08);
+            --success: #68a088;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--soft-foam);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            max-width: 428px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--white);
+            position: relative;
+            padding-bottom: 80px;
+        }
+
+        /* Wave Background */
+        .wave-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 300px;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            bottom: 0;
+        }
+
+        /* Header */
+        .header {
+            position: relative;
+            padding: env(safe-area-inset-top) 20px 80px;
+            color: var(--text-primary);
+            z-index: 10;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .time-greeting {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .welcome-message {
+            font-size: 28px;
+            font-weight: 300;
+            color: var(--deep-water);
+            letter-spacing: -0.5px;
+        }
+
+        /* Tide Visualization Card */
+        .tide-card {
+            margin: -60px 20px 20px;
+            padding: 24px;
+            background: var(--white);
+            border-radius: 24px;
+            box-shadow: 0 8px 24px var(--shadow);
+            position: relative;
+            z-index: 20;
+            overflow: hidden;
+        }
+
+        .tide-visualization {
+            height: 120px;
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--pale-sky) 0%, var(--misty-blue) 100%);
+        }
+
+        .tide-wave-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+        }
+
+        .tide-sun {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: var(--gentle-coral);
+            border-radius: 50%;
+            top: 20px;
+            right: 30px;
+            box-shadow: 0 0 20px rgba(221, 181, 166, 0.4);
+        }
+
+        .tide-info {
+            text-align: center;
+        }
+
+        .tide-status {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--deep-water);
+            margin-bottom: 4px;
+        }
+
+        .tide-details {
+            font-size: 14px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Lifestyle Medicine Dashboard */
+        .lifestyle-dashboard {
+            padding: 0 20px 20px;
+        }
+
+        .dashboard-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .lifestyle-pillars {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .pillar-card {
+            background: var(--soft-foam);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .pillar-card.completed {
+            background: linear-gradient(135deg, var(--soft-sage) 0%, var(--success) 100%);
+            color: white;
+        }
+
+        .pillar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .pillar-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--white);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .pillar-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(143, 165, 178, 0.1) 0%, transparent 70%);
+            animation: pulse-icon 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        .pillar-card.completed .pillar-icon {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .pillar-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--misty-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+        }
+
+        .pillar-card.completed .pillar-check {
+            background: var(--white);
+            border-color: var(--white);
+        }
+
+        .pillar-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .pillar-metric {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .pillar-card.completed .pillar-title,
+        .pillar-card.completed .pillar-metric {
+            color: white;
+        }
+
+        /* Quick Actions */
+        .quick-actions-section {
+            padding: 0 20px 20px;
+        }
+
+        .section-header {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .action-cards {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 4px;
+        }
+
+        .action-card {
+            flex: 0 0 140px;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px 16px;
+            box-shadow: 0 2px 10px var(--shadow);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:active {
+            transform: scale(0.98);
+        }
+
+        .action-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 12px;
+            background: var(--pale-sky);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background: linear-gradient(to top, rgba(143, 165, 178, 0.1), transparent);
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .action-duration {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Evidence-Based Programs */
+        .programs-section {
+            padding: 20px;
+            background: var(--soft-foam);
+        }
+
+        .program-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .program-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 16px var(--shadow);
+        }
+
+        .program-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--misty-blue) 0%, var(--muted-ocean) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .program-content {
+            flex: 1;
+        }
+
+        .program-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .program-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .evidence-tag {
+            display: inline-flex;
+            align-items: center;
+            background: var(--pale-sky);
+            color: var(--deep-water);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            gap: 4px;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            padding: 20px;
+        }
+
+        .weekly-overview {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--gentle-coral);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            padding: 12px 0 env(safe-area-inset-bottom);
+            box-shadow: 0 -4px 16px var(--shadow);
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 428px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            color: var(--deep-water);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Breathing Overlay */
+        .breathing-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(245, 242, 237, 0.98);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+        }
+
+        .breathing-overlay.active {
+            display: flex;
+        }
+
+        .breathing-content {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            background: var(--misty-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 0.6; }
+        }
+
+        .breathing-text {
+            font-size: 20px;
+            color: var(--white);
+            font-weight: 500;
+        }
+
+        .breathing-instruction {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+        }
+
+        .close-breathing {
+            padding: 12px 32px;
+            background: var(--deep-water);
+            color: var(--white);
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 428px) {
+            .app-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Wave Background -->
+        <div class="wave-background">
+            <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e8eef2;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#b5c4ce;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#waveGradient)" d="M0,160 C480,260 960,60 1440,160 L1440,320 L0,320 Z">
+                    <animate attributeName="d" 
+                        values="M0,160 C480,260 960,60 1440,160 L1440,320 L0,320 Z;
+                                M0,160 C480,60 960,260 1440,160 L1440,320 L0,320 Z;
+                                M0,160 C480,260 960,60 1440,160 L1440,320 L0,320 Z"
+                        dur="10s" 
+                        repeatCount="indefinite" />
+                </path>
+            </svg>
+        </div>
+
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="time-greeting">Good morning</div>
+                <h1 class="welcome-message">Find your rhythm</h1>
+            </div>
+        </header>
+
+        <!-- Tide Visualization Card -->
+        <div class="tide-card">
+            <div class="tide-visualization">
+                <div class="tide-sun"></div>
+                <div class="tide-wave-container">
+                    <svg width="100%" height="100%" viewBox="0 0 400 100" preserveAspectRatio="none">
+                        <defs>
+                            <linearGradient id="tideGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#8fa5b2;stop-opacity:0.6" />
+                                <stop offset="100%" style="stop-color:#6b8190;stop-opacity:0.8" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#tideGradient)" d="M0,50 Q100,20 200,50 T400,50 L400,100 L0,100 Z">
+                            <animate attributeName="d" 
+                                values="M0,50 Q100,20 200,50 T400,50 L400,100 L0,100 Z;
+                                        M0,30 Q100,60 200,30 T400,30 L400,100 L0,100 Z;
+                                        M0,50 Q100,20 200,50 T400,50 L400,100 L0,100 Z"
+                                dur="6s" 
+                                repeatCount="indefinite" />
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <div class="tide-info">
+                <div class="tide-status">Today's Coastal Conditions</div>
+                <div class="tide-details">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12c1.5-3 4-3 5.5 0s4 3 5.5 0 4-3 5.5 0"/>
+                        <path d="M3 17c1.5-3 4-3 5.5 0s4 3 5.5 0 4-3 5.5 0"/>
+                    </svg>
+                    <span>High tide at 2:30 PM • St Ives Bay</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lifestyle Medicine Dashboard -->
+        <div class="lifestyle-dashboard">
+            <h2 class="dashboard-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Today's Lifestyle Medicine
+            </h2>
+            <div class="lifestyle-pillars">
+                <div class="pillar-card" onclick="trackPillar('movement')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b8190" stroke-width="2">
+                                <circle cx="12" cy="4" r="2"/>
+                                <path d="M12 6v4l3.5 3.5"/>
+                                <path d="M6.5 13.5L12 10l5.5 3.5"/>
+                                <path d="M6.5 13.5V20"/>
+                                <path d="M17.5 13.5V20"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#68a088" stroke-width="3">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pillar-title">Movement</div>
+                    <div class="pillar-metric">Goal: 30 min moderate</div>
+                </div>
+                
+                <div class="pillar-card" onclick="trackPillar('nutrition')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b8190" stroke-width="2">
+                                <path d="M12 2v20M2 12h20"/>
+                                <circle cx="12" cy="12" r="8"/>
+                                <path d="M12 12l-3-3"/>
+                                <circle cx="15" cy="9" r="1" fill="#6b8190"/>
+                                <circle cx="9" cy="15" r="1" fill="#6b8190"/>
+                                <circle cx="15" cy="15" r="1" fill="#6b8190"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check"></div>
+                    </div>
+                    <div class="pillar-title">Nutrition</div>
+                    <div class="pillar-metric">Mediterranean score: 7/10</div>
+                </div>
+                
+                <div class="pillar-card completed" onclick="trackPillar('sleep')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2">
+                                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#68a088" stroke-width="3">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="pillar-title">Sleep</div>
+                    <div class="pillar-metric">7.5 hours tracked</div>
+                </div>
+                
+                <div class="pillar-card" onclick="trackPillar('stress')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b8190" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check"></div>
+                    </div>
+                    <div class="pillar-title">Stress Mgmt</div>
+                    <div class="pillar-metric">HRV: 45ms</div>
+                </div>
+                
+                <div class="pillar-card" onclick="trackPillar('social')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b8190" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                                <path d="M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check"></div>
+                    </div>
+                    <div class="pillar-title">Connection</div>
+                    <div class="pillar-metric">Social time: 0 min</div>
+                </div>
+                
+                <div class="pillar-card" onclick="trackPillar('purpose')">
+                    <div class="pillar-header">
+                        <div class="pillar-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6b8190" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                        <div class="pillar-check"></div>
+                    </div>
+                    <div class="pillar-title">Purpose</div>
+                    <div class="pillar-metric">Gratitude logged</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions-section">
+            <h3 class="section-header">Quick wellness boosts</h3>
+            <div class="action-cards">
+                <div class="action-card" onclick="startBreathing()">
+                    <div class="action-icon">
+                        <svg width="40" height="40" viewBox="0 0 60 60" fill="
